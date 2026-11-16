@@ -80,12 +80,13 @@
 		popover.hide();
 	}
 
-	// Pull the panel back on-screen once it's mounted — a trigger near the
-	// right edge can otherwise position the fixed-width calendar partly off
-	// the viewport.
+	// Place the panel once it's mounted and its real size is known: flip it
+	// above the trigger when there isn't room below (a trigger near the bottom
+	// of the screen or of a drawer), and keep it inside the viewport
+	// horizontally.
 	$effect(() => {
 		if (!popover.open || !panel) return;
-		popover.clampHorizontal(panel.getBoundingClientRect().width);
+		popover.fit(panel);
 	});
 
 	function pickDay(day: CalendarDay) {
@@ -187,8 +188,10 @@
 		if (popover.open && isOutside(event, root, panel)) closePanel();
 	}
 
+	// Follow the trigger on scroll/resize (re-measuring, so it can flip), and
+	// only close once the trigger itself has left the viewport.
 	function onWindowScrollOrResize() {
-		if (popover.open) closePanel();
+		if (popover.open && !popover.reposition()) closePanel();
 	}
 </script>
 
@@ -247,7 +250,10 @@
 		role="dialog"
 		aria-label="Choose a date"
 		class="fixed z-50 w-70 overflow-hidden rounded-control border border-subtle bg-surface-raised p-3 shadow-[0_16px_40px_rgba(0,0,0,0.3)]"
-		style="top: {popover.top}px; left: {popover.left}px;"
+		style:top={popover.top === null ? null : `${popover.top}px`}
+		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
+		style:left="{popover.left}px"
+		style:transform-origin={popover.placement === 'above' ? 'bottom left' : 'top left'}
 		transition:scale={{ start: 0.92, duration: motion(160), easing: backOut }}
 	>
 		<div class="mb-2 flex items-center justify-between">

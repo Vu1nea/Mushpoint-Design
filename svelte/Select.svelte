@@ -56,11 +56,12 @@
 		document.getElementById(`${listboxId}-${option.value}`)?.scrollIntoView({ block: 'nearest' });
 	});
 
-	// Pull the panel back on-screen once it's mounted — a trigger near the
-	// right edge can otherwise position it partly off the viewport.
+	// Place the panel once it's mounted and its real size is known: flip it
+	// above the trigger when there isn't room below, and keep it inside the
+	// viewport horizontally.
 	$effect(() => {
 		if (!popover.open || !panel) return;
-		popover.clampHorizontal(panel.getBoundingClientRect().width);
+		popover.fit(panel);
 	});
 
 	function openPanel() {
@@ -118,16 +119,17 @@
 		if (popover.open && isOutside(event, root, panel)) closePanel();
 	}
 
+	// Follow the trigger on an outside scroll or resize (re-measuring, so it
+	// can flip), and only close once the trigger itself has left the viewport.
 	function onWindowScroll(event: Event) {
 		if (!popover.open) return;
-		// Ignore the listbox's own scroll (e.g. scrollIntoView on open/arrow-nav) —
-		// only an outside scroll should close the panel.
+		// Ignore the listbox's own scroll (e.g. scrollIntoView on open/arrow-nav).
 		if (panel?.contains(event.target as Node)) return;
-		closePanel();
+		if (!popover.reposition()) closePanel();
 	}
 
 	function onWindowResize() {
-		if (popover.open) closePanel();
+		if (popover.open && !popover.reposition()) closePanel();
 	}
 </script>
 
@@ -198,7 +200,11 @@
 		id={listboxId}
 		role="listbox"
 		class="fixed z-50 max-h-70 overflow-y-auto rounded-control border border-subtle bg-surface-raised py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)]"
-		style="top: {popover.top}px; left: {popover.left}px; width: {popover.width}px;"
+		style:top={popover.top === null ? null : `${popover.top}px`}
+		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
+		style:left="{popover.left}px"
+		style:width="{popover.width}px"
+		style:transform-origin={popover.placement === 'above' ? 'bottom left' : 'top left'}
 		transition:scale={{ start: 0.92, duration: motion(160), easing: backOut }}
 		onmousedown={(event) => event.preventDefault()}
 	>
