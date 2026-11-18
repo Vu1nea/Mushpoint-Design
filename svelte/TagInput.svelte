@@ -41,12 +41,12 @@
 >
 	{#each tags as tag (tag)}
 		<span
-			class="flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-0.5 text-2xs font-semibold text-accent"
+			class="flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-0.5 text-2xs font-semibold text-accent-ink"
 		>
 			{tag}
 			<button
 				type="button"
-				class="text-accent/70 transition-colors hover:text-accent"
+				class="text-accent-ink/70 transition-colors hover:text-accent-ink"
 				onclick={() => remove(tag)}
 			>
 				<Icon name="close" size={10} weight={2.4} label="Remove tag {tag}" />

@@ -298,7 +298,7 @@
 							{day.inCurrentMonth ? 'text-content' : 'text-muted/50'}
 							{day.iso === activeIso ? 'ring-2 ring-accent' : ''}
 							{day.isSelected ? 'mp-pop bg-accent text-accent-contrast' : 'hover:bg-surface'}
-							{day.isToday && !day.isSelected ? 'font-bold text-accent' : ''}"
+							{day.isToday && !day.isSelected ? 'font-bold text-accent-ink' : ''}"
 						onclick={() => pickDay(day)}
 					>
 						{day.day}
@@ -311,7 +311,7 @@
 			<button
 				type="button"
 				tabindex="-1"
-				class="text-xs font-semibold text-accent"
+				class="text-xs font-semibold text-accent-ink"
 				onclick={goToday}
 			>
 				Today

@@ -188,7 +188,7 @@
 	>
 		<span class="truncate">{option.label}</span>
 		{#if option.value === value}
-			<Icon name="check" size={13} weight={2.4} class="shrink-0 text-accent" />
+			<Icon name="check" size={13} weight={2.4} class="shrink-0 text-accent-ink" />
 		{/if}
 	</li>
 {/snippet}

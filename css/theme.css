@@ -38,8 +38,11 @@
 	--mp-text: #f2f1fb;
 	--mp-text-muted: #9c9ee8;
 	--mp-accent: #7b6fc4;
-	/* Accent fills carry the page background as their text color, per the design. */
-	--mp-accent-contrast: #14152b;
+	/* Accent-colored text (links, chips, highlights). The accent itself is for
+	 * fills and borders; as text it fails WCAG AA (4.5:1) on the surfaces. */
+	--mp-accent-ink: #9c93d3;
+	/* Text on accent fills. A shade darker than the page so labels reach 4.5:1. */
+	--mp-accent-contrast: #0b0c1a;
 	--mp-accent-secondary: #4fd1c5;
 	--mp-accent-tertiary: #5ba8d4;
 	--mp-danger: #e2718a;
@@ -55,9 +58,13 @@
 	--mp-surface-raised: #fdf1f1;
 	--mp-border: #f2d4da;
 	--mp-text: #4a2e33;
-	--mp-text-muted: #b85c73;
+	--mp-text-muted: #b3516a;
 	--mp-accent: #e8879f;
-	--mp-accent-contrast: #fff8f5;
+	/* The pastel accent is for fills and borders; text needs this darker shade
+	 * to reach WCAG AA (4.5:1) on white and on accent-tinted chips. */
+	--mp-accent-ink: #c7264e;
+	/* Dark labels on the pastel fill: white text on it is only 2.4:1. */
+	--mp-accent-contrast: #4a2e33;
 	--mp-accent-secondary: #9cb88a;
 	--mp-accent-tertiary: #c9a8d4;
 	--mp-danger: #c2445f;
@@ -78,6 +85,7 @@
 	--color-content: var(--mp-text);
 	--color-muted: var(--mp-text-muted);
 	--color-accent: var(--mp-accent);
+	--color-accent-ink: var(--mp-accent-ink);
 	--color-accent-contrast: var(--mp-accent-contrast);
 	--color-accent-secondary: var(--mp-accent-secondary);
 	--color-accent-tertiary: var(--mp-accent-tertiary);
