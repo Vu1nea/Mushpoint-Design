@@ -55,6 +55,18 @@ forms, and a bundler's default bare-specifier resolution handles both by
 probing extensions itself. An `exports` map would only handle the exact paths
 listed and break the extensionless ones.
 
+## Accent colors and contrast
+
+Each theme defines three accent tokens. Pick by what the color is doing:
+
+| Token (Tailwind) | Use for | Why |
+| --- | --- | --- |
+| `accent` (`bg-accent`, `border-accent`) | fills, borders, rings, tints | the brand color; too low-contrast for body-size text in both themes |
+| `accent-ink` (`text-accent-ink`) | accent-colored text: links, chips, highlights | reaches WCAG AA 4.5:1 on every surface and on `bg-accent/15` chips |
+| `accent-contrast` (`text-accent-contrast`) | text on an `accent` fill (buttons, selected days) | reaches 4.5:1 on the accent itself |
+
+Avoid `text-accent` for readable text: it fails AA in both themes.
+
 ## Consuming raw source
 
 This package ships **uncompiled** `.ts`/`.svelte` source, not a build. Your
