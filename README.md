@@ -27,7 +27,7 @@ package's `css/` tokens and `utils/` helpers so the result renders identically.
 Not published to npm — install straight from the repo, pinned to a tag or commit:
 
 ```sh
-npm install git+https://github.com/Vu1nea/mushpoint-design.git#v0.0.1
+npm install git+https://github.com/Vu1nea/Mushpoint-Design.git#v0.0.1
 ```
 
 ## Import convention

@@ -7,7 +7,7 @@
 	"description": "Shared design tokens, utilities, and Svelte UI primitives extracted from Mushpoint.",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Vu1nea/mushpoint-design.git"
+		"url": "git+https://github.com/Vu1nea/Mushpoint-Design.git"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"
