@@ -48,6 +48,22 @@
 		if (visible) hide();
 	}
 
+	/** Shows on hover and keyboard focus, hides on leave and blur. */
+	function hoverable(node: HTMLElement) {
+		const events = [
+			['mouseenter', show],
+			['mouseleave', hide],
+			['focusin', show],
+			['focusout', hide]
+		] as const;
+		for (const [type, fn] of events) node.addEventListener(type, fn);
+		return {
+			destroy() {
+				for (const [type, fn] of events) node.removeEventListener(type, fn);
+			}
+		};
+	}
+
 	/** Reparent to <body> so `position: fixed` coordinates aren't relative to
 	 * some transformed ancestor, and so stacking order always wins. */
 	function portal(node: HTMLElement) {
@@ -62,15 +78,10 @@
 
 <svelte:window onscroll={hideOnMove} onresize={hideOnMove} />
 
-<span
-	bind:this={anchor}
-	class="tooltip-anchor"
-	role="group"
-	onmouseenter={show}
-	onmouseleave={hide}
-	onfocusin={show}
-	onfocusout={hide}
->
+<!-- No role: a role="group" wrapper inside a <button> removes the icon's
+	 label from the button's accessible name, leaving icon-only buttons
+	 unnamed. Listeners are bound by an action so the plain span needs no role. -->
+<span bind:this={anchor} class="tooltip-anchor" use:hoverable>
 	{@render children()}
 </span>
 
