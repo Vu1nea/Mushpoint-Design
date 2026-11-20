@@ -58,7 +58,9 @@
 	--mp-surface-raised: #fdf1f1;
 	--mp-border: #f2d4da;
 	--mp-text: #4a2e33;
-	--mp-text-muted: #b3516a;
+	/* At least 4.5:1 on every coquette surface, including surface-raised (popups):
+	 * #b3516a passed on white but was 4.42:1 on #fdf1f1. */
+	--mp-text-muted: #ae4f67;
 	--mp-accent: #e8879f;
 	/* The pastel accent is for fills and borders; text needs this darker shade
 	 * to reach WCAG AA (4.5:1) on white and on accent-tinted chips. */
