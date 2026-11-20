@@ -11,8 +11,10 @@
 	let { error, onDismiss }: Props = $props();
 
 	const normalized = $derived(normalizeError(error));
+	// 'unavailable' covers offline, unreachable and rate-limited (429) alike, so
+	// the heading stays neutral and the message says which.
 	const heading = $derived(
-		normalized.kind === 'unavailable' ? 'Backend not running' : 'Something went wrong'
+		normalized.kind === 'unavailable' ? 'Service unavailable' : 'Something went wrong'
 	);
 </script>
 
