@@ -7,6 +7,7 @@
 		flattenOptions,
 		isGroup,
 		labelFor,
+		typeaheadIndex,
 		type SelectItem,
 		type SelectOption
 	} from '../utils/selectOptions';
@@ -33,7 +34,11 @@
 	}: Props = $props();
 
 	const popover = new Popover();
-	const listboxId = $derived(`${id ?? 'select'}-listbox`);
+	// Unique per instance, so two Selects without an `id` don't share option ids.
+	const uid = $props.id();
+	const listboxId = $derived(`${id ?? uid}-listbox`);
+	/** How far Page Up / Page Down move the highlight. */
+	const PAGE = 10;
 
 	let root: HTMLElement | undefined = $state();
 	let trigger: HTMLButtonElement | undefined = $state();
@@ -81,30 +86,107 @@
 		trigger?.focus();
 	}
 
+	// Type-ahead: letters typed within half a second of each other form one query.
+	let typed = '';
+	let typedTimer: ReturnType<typeof setTimeout> | undefined;
+	$effect(() => () => clearTimeout(typedTimer));
+
+	function typeahead(char: string) {
+		clearTimeout(typedTimer);
+		typed += char;
+		typedTimer = setTimeout(() => (typed = ''), 500);
+		const index = typeaheadIndex(
+			flat.map((option) => option.label),
+			highlighted,
+			typed
+		);
+		if (index >= 0) highlighted = index;
+	}
+
+	const isPrintable = (event: KeyboardEvent) =>
+		event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey;
+
+	/** Keys follow the ARIA select-only combobox pattern. Focus never leaves the
+	 * trigger; the highlighted option is exposed through aria-activedescendant. */
 	function onTriggerKeydown(event: KeyboardEvent) {
 		if (disabled) return;
+		const last = flat.length - 1;
 		if (!popover.open) {
 			if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
 				event.preventDefault();
 				openPanel();
+			} else if (event.key === 'Home' || event.key === 'End') {
+				event.preventDefault();
+				openPanel();
+				highlighted = event.key === 'Home' ? 0 : Math.max(last, 0);
+			} else if (isPrintable(event)) {
+				event.preventDefault();
+				openPanel();
+				typeahead(event.key);
 			}
 			return;
 		}
-		if (event.key === 'ArrowDown') {
+		// A space while typing a query is part of the query, not "choose".
+		if (event.key === ' ' && typed) {
 			event.preventDefault();
-			highlighted = Math.min(highlighted + 1, flat.length - 1);
-		} else if (event.key === 'ArrowUp') {
-			event.preventDefault();
-			highlighted = Math.max(highlighted - 1, 0);
-		} else if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			const option = flat[highlighted];
-			if (option) choose(option.value);
-		} else if (event.key === 'Escape') {
-			event.preventDefault();
-			event.stopPropagation();
-			closePanel();
-			trigger?.focus();
+			typeahead(' ');
+			return;
+		}
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault();
+				highlighted = Math.min(highlighted + 1, last);
+				break;
+			case 'ArrowUp':
+				event.preventDefault();
+				if (event.altKey) {
+					const option = flat[highlighted];
+					if (option) choose(option.value);
+				} else {
+					highlighted = Math.max(highlighted - 1, 0);
+				}
+				break;
+			case 'Home':
+				event.preventDefault();
+				highlighted = 0;
+				break;
+			case 'End':
+				event.preventDefault();
+				highlighted = Math.max(last, 0);
+				break;
+			case 'PageUp':
+				event.preventDefault();
+				highlighted = Math.max(highlighted - PAGE, 0);
+				break;
+			case 'PageDown':
+				event.preventDefault();
+				highlighted = Math.min(highlighted + PAGE, last);
+				break;
+			case 'Enter':
+			case ' ': {
+				event.preventDefault();
+				const option = flat[highlighted];
+				if (option) choose(option.value);
+				break;
+			}
+			case 'Tab': {
+				// Takes the highlighted option, then lets focus move on as usual.
+				const option = flat[highlighted];
+				if (option) value = option.value;
+				closePanel();
+				break;
+			}
+			case 'Escape':
+				event.preventDefault();
+				event.stopPropagation();
+				closePanel();
+				trigger?.focus();
+				break;
+			default:
+				if (isPrintable(event)) {
+					event.preventDefault();
+					typeahead(event.key);
+				}
 		}
 	}
 
@@ -210,15 +292,20 @@
 	>
 		{#each options as item, index (isGroup(item) ? `group-${index}` : item.value)}
 			{#if isGroup(item)}
-				<li
-					class="px-3.25 pt-2.5 pb-1 text-2xs font-semibold tracking-[0.06em] text-muted uppercase"
-					role="presentation"
-				>
-					{item.label}
+				<!-- A labelled group, so screen readers say which group an option is in. -->
+				<li role="presentation">
+					<span
+						id="{listboxId}-group-{index}"
+						class="block px-3.25 pt-2.5 pb-1 text-2xs font-semibold tracking-[0.06em] text-muted uppercase"
+					>
+						{item.label}
+					</span>
+					<ul role="group" aria-labelledby="{listboxId}-group-{index}">
+						{#each item.options as option (option.value)}
+							{@render optionRow(option)}
+						{/each}
+					</ul>
 				</li>
-				{#each item.options as option (option.value)}
-					{@render optionRow(option)}
-				{/each}
 			{:else}
 				{@render optionRow(item)}
 			{/if}

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { backOut } from 'svelte/easing';
 	import { fly, scale } from 'svelte/transition';
 
 	import {
-		addDays,
+		dayKeyTarget,
 		isoOf,
 		monthGrid,
 		monthLabel,
@@ -38,7 +39,18 @@
 		class: className = ''
 	}: Props = $props();
 
-	const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+	const WEEKDAYS = [
+		['Su', 'Sunday'],
+		['Mo', 'Monday'],
+		['Tu', 'Tuesday'],
+		['We', 'Wednesday'],
+		['Th', 'Thursday'],
+		['Fr', 'Friday'],
+		['Sa', 'Saturday']
+	] as const;
+	const uid = $props.id();
+	const headingId = `${uid}-heading`;
+	const valueId = `${uid}-value`;
 	// Recomputed on every open (see openPanel) rather than left as a one-time
 	// const, so "today" doesn't go stale on a component that stays mounted
 	// across midnight.
@@ -60,13 +72,35 @@
 
 	const grid = $derived(monthGrid(viewYear, viewMonth, value || null, today));
 	const heading = $derived(monthLabel(viewYear, viewMonth));
+	const weeks = $derived(
+		Array.from({ length: grid.length / 7 }, (_, week) => grid.slice(week * 7, week * 7 + 7))
+	);
+
+	/** Exactly one text colour per day, so no two colour utilities fight over
+	 * it. Other-month days use the full muted token: faded below it fails WCAG AA. */
+	function dayTone(day: CalendarDay) {
+		if (day.isSelected) return 'mp-pop bg-accent text-accent-contrast';
+		if (day.isToday) return 'font-bold text-accent-ink hover:bg-surface';
+		return `${day.inCurrentMonth ? 'text-content' : 'text-muted'} hover:bg-surface`;
+	}
+
+	function fullDateLabel(iso: string) {
+		const [year, month, day] = iso.split('-').map(Number);
+		return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+			weekday: 'long',
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		});
+	}
 
 	function baseYearMonth(): { year: number; month: number } {
 		const [year, month] = (value || today).split('-').map(Number);
 		return { year, month: month - 1 };
 	}
 
-	function openPanel() {
+	/** Opens the dialog and moves focus to the selected day (or today). */
+	async function openPanel() {
 		if (disabled || !trigger) return;
 		today = todayIso();
 		const base = baseYearMonth();
@@ -74,6 +108,18 @@
 		viewMonth = base.month;
 		activeIso = value || today;
 		popover.show(trigger);
+		await tick();
+		focusActive();
+	}
+
+	/** Focuses the active day in the month on view. The month's grid is looked up
+	 * by its key, because the previous month's grid lingers while it slides out. */
+	function focusActive() {
+		panel
+			?.querySelector<HTMLElement>(
+				`[data-month="${viewYear}-${viewMonth}"] [data-iso="${activeIso}"]`
+			)
+			?.focus();
 	}
 
 	function closePanel() {
@@ -121,8 +167,7 @@
 		value = '';
 	}
 
-	function moveActive(delta: number) {
-		const next = addDays(activeIso, delta);
+	function setActive(next: string) {
 		const [year, month] = next.split('-').map(Number);
 		const monthIndex = month - 1;
 		if (year !== viewYear || monthIndex !== viewMonth) {
@@ -136,45 +181,58 @@
 	}
 
 	function onTriggerKeydown(event: KeyboardEvent) {
-		if (disabled) return;
-		if (!popover.open) {
-			if (['ArrowDown', 'Enter', ' '].includes(event.key)) {
-				event.preventDefault();
-				openPanel();
-			}
+		if (disabled || popover.open) return;
+		if (['ArrowDown', 'Enter', ' '].includes(event.key)) {
+			event.preventDefault();
+			openPanel();
+		}
+	}
+
+	/** Keys inside the grid follow the ARIA date picker dialog pattern. */
+	async function onDayKeydown(event: KeyboardEvent, day: CalendarDay) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			pickDay(day);
 			return;
 		}
-		switch (event.key) {
-			case 'ArrowLeft':
-				event.preventDefault();
-				moveActive(-1);
-				break;
-			case 'ArrowRight':
-				event.preventDefault();
-				moveActive(1);
-				break;
-			case 'ArrowUp':
-				event.preventDefault();
-				moveActive(-7);
-				break;
-			case 'ArrowDown':
-				event.preventDefault();
-				moveActive(7);
-				break;
-			case 'Enter':
-			case ' ': {
-				event.preventDefault();
-				const match = grid.find((day) => day.iso === activeIso);
-				if (match) pickDay(match);
-				break;
-			}
-			case 'Escape':
-				event.preventDefault();
-				event.stopPropagation();
-				closePanel();
-				trigger?.focus();
-				break;
+		const next = dayKeyTarget(activeIso, event.key, event.shiftKey);
+		if (!next) return;
+		event.preventDefault();
+		setActive(next);
+		await tick();
+		focusActive();
+	}
+
+	/** The dialog is modal: Escape returns to the trigger and Tab stays inside. */
+	function onPanelKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape') {
+			event.preventDefault();
+			event.stopPropagation();
+			closePanel();
+			trigger?.focus();
+			return;
 		}
+		if (event.key !== 'Tab' || !panel) return;
+		const current = `[data-month="${viewYear}-${viewMonth}"]`;
+		const stops = [
+			...panel.querySelectorAll<HTMLElement>('button:not([disabled]), [tabindex="0"]')
+		].filter((element) => !element.closest(`[data-month]:not(${current})`));
+		if (stops.length === 0) return;
+		const first = stops[0];
+		const last = stops[stops.length - 1];
+		if (event.shiftKey && document.activeElement === first) {
+			event.preventDefault();
+			last.focus();
+		} else if (!event.shiftKey && document.activeElement === last) {
+			event.preventDefault();
+			first.focus();
+		}
+	}
+
+	function onPanelFocusOut(event: FocusEvent) {
+		const next = event.relatedTarget as Node | null;
+		if (!next || root?.contains(next) || panel?.contains(next)) return;
+		closePanel();
 	}
 
 	function onTriggerFocusOut(event: FocusEvent) {
@@ -209,6 +267,7 @@
 		aria-haspopup="dialog"
 		aria-expanded={popover.open}
 		aria-label={ariaLabel}
+		aria-describedby={valueId}
 		{id}
 		class="{dashed
 			? field.dashed
@@ -222,7 +281,7 @@
 		onkeydown={onTriggerKeydown}
 		onfocusout={onTriggerFocusOut}
 	>
-		<span class="truncate {value ? '' : 'text-muted'}">
+		<span id={valueId} class="truncate {value ? '' : 'text-muted'}">
 			{value ? formatDate(value) : placeholder}
 		</span>
 		<Icon name="calendar" size={14} weight={1.8} class="shrink-0 text-muted" />
@@ -248,28 +307,31 @@
 		use:portal
 		bind:this={panel}
 		role="dialog"
+		aria-modal="true"
 		aria-label="Choose a date"
+		tabindex="-1"
 		class="fixed z-50 w-70 overflow-hidden rounded-control border border-subtle bg-surface-raised p-3 shadow-[0_16px_40px_rgba(0,0,0,0.3)]"
 		style:top={popover.top === null ? null : `${popover.top}px`}
 		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
 		style:left="{popover.left}px"
 		style:transform-origin={popover.placement === 'above' ? 'bottom left' : 'top left'}
 		transition:scale={{ start: 0.92, duration: motion(160), easing: backOut }}
+		onkeydown={onPanelKeydown}
+		onfocusout={onPanelFocusOut}
 	>
 		<div class="mb-2 flex items-center justify-between">
 			<button
 				type="button"
-				tabindex="-1"
 				class="rounded-control p-1 text-muted transition-colors hover:text-content"
 				aria-label="Previous month"
 				onclick={() => changeMonth(-1)}
 			>
 				<Icon name="chevron-right" size={13} weight={2.2} class="rotate-180" />
 			</button>
-			<span class="text-sm font-semibold">{heading}</span>
+			<!-- Live, so moving to another month (by key or button) is announced. -->
+			<h2 id={headingId} class="text-sm font-semibold" aria-live="polite">{heading}</h2>
 			<button
 				type="button"
-				tabindex="-1"
 				class="rounded-control p-1 text-muted transition-colors hover:text-content"
 				aria-label="Next month"
 				onclick={() => changeMonth(1)}
@@ -278,52 +340,68 @@
 			</button>
 		</div>
 
-		<div class="grid grid-cols-7 gap-y-1 text-center">
-			{#each WEEKDAYS as weekday (weekday)}
-				<span class="text-2xs font-semibold text-muted">{weekday}</span>
-			{/each}
-		</div>
-
-		{#key `${viewYear}-${viewMonth}`}
-			<div
-				class="grid grid-cols-7 gap-y-1 text-center"
-				in:fly={{ x: slideDirection * 24, duration: motion(180), easing: backOut }}
-				out:fly={{ x: slideDirection * -24, duration: motion(120) }}
-			>
-				{#each grid as day (day.iso)}
-					<button
-						type="button"
-						tabindex="-1"
-						class="mx-auto flex size-7.5 items-center justify-center rounded-full text-xs transition-colors
-							{day.inCurrentMonth ? 'text-content' : 'text-muted/50'}
-							{day.iso === activeIso ? 'ring-2 ring-accent' : ''}
-							{day.isSelected ? 'mp-pop bg-accent text-accent-contrast' : 'hover:bg-surface'}
-							{day.isToday && !day.isSelected ? 'font-bold text-accent-ink' : ''}"
-						onclick={() => pickDay(day)}
+		<div role="grid" aria-labelledby={headingId}>
+			<div role="row" class="mb-1 grid grid-cols-7 text-center">
+				{#each WEEKDAYS as [short, long] (short)}
+					<span role="columnheader" aria-label={long} class="text-2xs font-semibold text-muted"
+						>{short}</span
 					>
-						{day.day}
-					</button>
 				{/each}
 			</div>
-		{/key}
+
+			{#key `${viewYear}-${viewMonth}`}
+				<div
+					role="rowgroup"
+					class="flex flex-col gap-1"
+					data-month="{viewYear}-{viewMonth}"
+					in:fly={{ x: slideDirection * 24, duration: motion(180), easing: backOut }}
+					out:fly={{ x: slideDirection * -24, duration: motion(120) }}
+				>
+					{#each weeks as week (week[0].iso)}
+						<div role="row" class="grid grid-cols-7 text-center">
+							{#each week as day (day.iso)}
+								<div
+									role="gridcell"
+									tabindex={day.iso === activeIso ? 0 : -1}
+									aria-selected={day.isSelected}
+									aria-current={day.isToday ? 'date' : undefined}
+									aria-label={fullDateLabel(day.iso)}
+									data-iso={day.iso}
+									class="mx-auto flex size-7.5 cursor-pointer items-center justify-center rounded-full text-xs transition-colors outline-none
+										{day.iso === activeIso ? 'ring-2 ring-accent' : ''}
+										{dayTone(day)}"
+									onclick={() => pickDay(day)}
+									onkeydown={(event) => onDayKeydown(event, day)}
+								>
+									{day.day}
+								</div>
+							{/each}
+						</div>
+					{/each}
+				</div>
+			{/key}
+		</div>
 
 		<div class="mt-2 flex items-center justify-between border-t border-subtle pt-2">
 			<button
 				type="button"
-				tabindex="-1"
 				class="text-xs font-semibold text-accent-ink"
-				onclick={goToday}
+				onclick={async () => {
+					goToday();
+					await tick();
+					focusActive();
+				}}
 			>
 				Today
 			</button>
 			{#if value}
 				<button
 					type="button"
-					tabindex="-1"
 					class="text-xs font-semibold text-muted transition-colors hover:text-content"
 					onclick={() => {
 						clearValue();
 						closePanel();
+						trigger?.focus();
 					}}
 				>
 					Clear

@@ -71,3 +71,37 @@ export function monthGrid(
 		};
 	});
 }
+
+/**
+ * Where a key press moves focus in a month grid, as an ISO day, or null for a
+ * key the grid doesn't handle. Follows the ARIA date-grid pattern: arrows move a
+ * day or a week, Home/End go to the start/end of the week (Sunday first), Page
+ * Up/Down a month and, with Shift, a year. The day clamps to the target month's
+ * length (Mar 31 to Feb 28).
+ */
+export function dayKeyTarget(iso: string, key: string, shift = false): string | null {
+	const [year, month, day] = iso.split('-').map(Number);
+	const weekday = new Date(year, month - 1, day).getDay();
+	switch (key) {
+		case 'ArrowLeft':
+			return addDays(iso, -1);
+		case 'ArrowRight':
+			return addDays(iso, 1);
+		case 'ArrowUp':
+			return addDays(iso, -7);
+		case 'ArrowDown':
+			return addDays(iso, 7);
+		case 'Home':
+			return addDays(iso, -weekday);
+		case 'End':
+			return addDays(iso, 6 - weekday);
+		case 'PageUp':
+		case 'PageDown': {
+			const next = shiftMonth(year, month - 1, (key === 'PageUp' ? -1 : 1) * (shift ? 12 : 1));
+			const lastDay = new Date(next.year, next.month + 1, 0).getDate();
+			return isoOf(next.year, next.month, Math.min(day, lastDay));
+		}
+		default:
+			return null;
+	}
+}
