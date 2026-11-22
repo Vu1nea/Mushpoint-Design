@@ -19,7 +19,7 @@
 </script>
 
 <div
-	class="mp-enter flex items-start gap-2.5 rounded-[10px] border border-warn/35 bg-warn/10 px-3.5 py-3"
+	class="mp-enter flex items-start gap-2.5 rounded-control bg-warn/10 px-3.5 py-3"
 	role="alert"
 >
 	<Icon name="warning" size={16} weight={2} class="mt-px text-warn" />

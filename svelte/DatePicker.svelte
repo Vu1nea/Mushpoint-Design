@@ -80,8 +80,8 @@
 	 * it. Other-month days use the full muted token: faded below it fails WCAG AA. */
 	function dayTone(day: CalendarDay) {
 		if (day.isSelected) return 'mp-pop bg-accent text-accent-contrast';
-		if (day.isToday) return 'font-bold text-accent-ink hover:bg-surface';
-		return `${day.inCurrentMonth ? 'text-content' : 'text-muted'} hover:bg-surface`;
+		if (day.isToday) return 'font-bold text-accent-ink hover:bg-surface-raised';
+		return `${day.inCurrentMonth ? 'text-content' : 'text-muted'} hover:bg-surface-raised`;
 	}
 
 	function fullDateLabel(iso: string) {
@@ -310,7 +310,7 @@
 		aria-modal="true"
 		aria-label="Choose a date"
 		tabindex="-1"
-		class="fixed z-50 w-70 overflow-hidden rounded-control border border-subtle bg-surface-raised p-3 shadow-[0_16px_40px_rgba(0,0,0,0.3)]"
+		class="fixed z-50 w-70 overflow-hidden rounded-[var(--radius-sheet)] border border-subtle bg-surface p-3 shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
 		style:top={popover.top === null ? null : `${popover.top}px`}
 		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
 		style:left="{popover.left}px"

@@ -44,7 +44,7 @@
 	></button>
 
 	<div
-		class="fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-90 -translate-x-1/2 -translate-y-1/2 rounded-card border border-subtle bg-surface p-4.5 shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
+		class="fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-90 -translate-x-1/2 -translate-y-1/2 rounded-[var(--radius-sheet)] border border-subtle bg-surface p-5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
 		role="alertdialog"
 		aria-modal="true"
 		aria-labelledby="confirm-title"

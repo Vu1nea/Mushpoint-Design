@@ -263,7 +263,7 @@
 		aria-selected={option.value === value}
 		class="mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded-control px-2.5 py-2 text-sm transition-colors {flatIndex ===
 		highlighted
-			? 'bg-surface'
+			? 'bg-surface-raised'
 			: ''}"
 		onclick={() => choose(option.value)}
 		onmouseenter={() => (highlighted = flatIndex)}
@@ -281,7 +281,7 @@
 		bind:this={panel}
 		id={listboxId}
 		role="listbox"
-		class="fixed z-50 max-h-70 overflow-y-auto rounded-control border border-subtle bg-surface-raised py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)]"
+		class="fixed z-50 max-h-70 overflow-y-auto rounded-control border border-subtle bg-surface py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
 		style:top={popover.top === null ? null : `${popover.top}px`}
 		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
 		style:left="{popover.left}px"

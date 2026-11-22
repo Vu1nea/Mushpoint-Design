@@ -30,7 +30,7 @@
 		onchange={(event) => onchange(event.currentTarget.checked)}
 	/>
 	<span
-		class="grid size-4.25 shrink-0 place-items-center rounded-md border-[1.5px] transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent {checked
+		class="grid size-4.25 shrink-0 place-items-center rounded-control border transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent {checked
 			? 'border-accent-secondary bg-accent-secondary text-accent-contrast'
 			: 'border-subtle bg-transparent'}"
 	>

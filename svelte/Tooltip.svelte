@@ -110,12 +110,12 @@
 		white-space: nowrap;
 		border-radius: var(--radius-control);
 		border: 1px solid var(--mp-border);
-		background: var(--mp-surface-raised);
+		background: var(--mp-surface);
 		color: var(--mp-text);
 		padding: 5px 9px;
 		font-size: var(--text-2xs);
 		font-weight: 600;
-		box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 		pointer-events: none;
 	}
 
@@ -127,7 +127,7 @@
 		width: 8px;
 		height: 8px;
 		rotate: 45deg;
-		background: var(--mp-surface-raised);
+		background: var(--mp-surface);
 		border-right: 1px solid var(--mp-border);
 		border-bottom: 1px solid var(--mp-border);
 	}

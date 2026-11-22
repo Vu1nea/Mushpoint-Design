@@ -8,7 +8,7 @@
 		value: number;
 		label?: string;
 		showValue?: boolean;
-		/** Track height in pixels: 8 on a goal, 6 inside a subgoal row. */
+		/** Track height in pixels: 4 by default, flat. */
 		height?: number;
 		color?: string;
 		/** Entrance stagger for lists of bars, e.g. from `stagger(index)`. */
@@ -19,7 +19,7 @@
 		value,
 		label,
 		showValue = true,
-		height = 8,
+		height = 4,
 		color = 'var(--mp-accent)',
 		delay = '0ms'
 	}: Props = $props();
