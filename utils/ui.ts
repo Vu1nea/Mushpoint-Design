@@ -74,7 +74,3 @@ export const field = {
 
 /** Section titles above a group of cards. */
 export const sectionHeading = 'text-sm font-semibold tracking-[0.06em] text-muted uppercase';
-
-/** Hover response for anything clickable that is card-shaped. */
-export const lift =
-	'transition-[transform,box-shadow,border-color] duration-150 hover:-translate-y-px hover:shadow-[0_8px_14px_-6px_var(--mp-accent)]';

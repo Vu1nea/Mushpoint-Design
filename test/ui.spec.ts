@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { button, chip, lift, pill, row, segment, sheet, stat, type PillTone } from '../utils/ui';
+import { button, chip, pill, row, segment, sheet, stat, type PillTone } from '../utils/ui';
 
 const tones: PillTone[] = ['neutral', 'active', 'done', 'warn', 'danger'];
 
@@ -30,8 +30,5 @@ describe('class builders', () => {
 		expect(chip(true)).not.toBe(chip(false));
 		expect(chip(true)).not.toContain('bg-accent ');
 		expect(segment(true)).not.toContain('bg-accent ');
-	});
-	it('keeps lift until Task 15', () => {
-		expect(lift).toBeTruthy();
 	});
 });
