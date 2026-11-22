@@ -32,3 +32,10 @@ describe('class builders', () => {
 		expect(segment(true)).not.toContain('bg-accent ');
 	});
 });
+
+describe('segment', () => {
+	it('never wraps a label and its count onto two lines', () => {
+		expect(segment(true)).toContain('whitespace-nowrap');
+		expect(segment(false)).toContain('whitespace-nowrap');
+	});
+});

@@ -27,7 +27,7 @@ export function chip(active: boolean): string {
 
 /** Small square-ish toggle used in rows of equal-width options (timeframe, status). */
 export function segment(active: boolean): string {
-	return `flex-1 rounded-control px-2 py-2 text-xs font-semibold transition-colors ${focusRing} ${
+	return `flex-1 rounded-control px-2 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${focusRing} ${
 		active
 			? 'bg-surface-raised text-content'
 			: 'bg-transparent text-muted hover:bg-surface-raised hover:text-content'
