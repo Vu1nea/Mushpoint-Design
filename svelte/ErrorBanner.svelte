@@ -19,12 +19,12 @@
 </script>
 
 <div
-	class="mp-enter flex items-start gap-2.5 rounded-control bg-warn/10 px-3.5 py-3"
+	class="mp-enter flex items-start gap-2.5 rounded-control border border-warn/40 bg-warn/10 px-3.5 py-3"
 	role="alert"
 >
 	<Icon name="warning" size={16} weight={2} class="mt-px text-warn" />
 	<div class="flex-1">
-		<p class="text-sm font-semibold text-warn">{heading}</p>
+		<p class="text-sm font-semibold text-content">{heading}</p>
 		<p class="text-xs text-muted">{normalized.message}</p>
 	</div>
 	{#if onDismiss}

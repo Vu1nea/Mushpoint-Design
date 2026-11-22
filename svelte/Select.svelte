@@ -1,3 +1,9 @@
+<script lang="ts" module>
+	/** Popover panel: raised fill so it lifts off a sheet or drawer. */
+	export const selectPanelClass =
+		'fixed z-50 max-h-70 overflow-y-auto rounded-control border border-subtle bg-surface-raised py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.3)]';
+</script>
+
 <script lang="ts">
 	import { backOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
@@ -263,7 +269,7 @@
 		aria-selected={option.value === value}
 		class="mx-1.5 flex cursor-pointer items-center justify-between gap-2 rounded-control px-2.5 py-2 text-sm transition-colors {flatIndex ===
 		highlighted
-			? 'bg-surface-raised'
+			? 'bg-accent/15'
 			: ''}"
 		onclick={() => choose(option.value)}
 		onmouseenter={() => (highlighted = flatIndex)}
@@ -281,7 +287,7 @@
 		bind:this={panel}
 		id={listboxId}
 		role="listbox"
-		class="fixed z-50 max-h-70 overflow-y-auto rounded-control border border-subtle bg-surface py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+		class={selectPanelClass}
 		style:top={popover.top === null ? null : `${popover.top}px`}
 		style:bottom={popover.bottom === null ? null : `${popover.bottom}px`}
 		style:left="{popover.left}px"

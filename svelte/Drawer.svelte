@@ -60,7 +60,7 @@
 	></button>
 
 	<div
-		class="fixed inset-y-0 right-0 z-50 flex w-110 max-w-[92vw] flex-col rounded-l-[var(--radius-sheet)] border-l border-subtle bg-surface shadow-[-8px_0_24px_rgba(0,0,0,0.18)]"
+		class="fixed inset-y-0 right-0 z-50 flex w-110 max-w-[92vw] flex-col overflow-hidden rounded-l-[var(--radius-sheet)] border-l border-subtle bg-surface shadow-[-8px_0_24px_rgba(0,0,0,0.18)]"
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -82,17 +82,17 @@
 				{#if error}
 					{@const failure = normalizeError(error)}
 					<div
-						class="mp-enter flex items-start gap-2.5 rounded-control bg-warn/10 px-3.5 py-3"
+						class="mp-enter flex items-start gap-2.5 rounded-control border border-warn/40 bg-warn/10 px-3.5 py-3"
 						role="alert"
 					>
 						<Icon name="warning" size={16} weight={2} class="mt-px text-warn" />
 						<div class="flex-1">
-							<p class="text-sm font-semibold text-warn">Couldn't save</p>
+							<p class="text-sm font-semibold text-content">Couldn't save</p>
 							<p class="text-xs text-muted">{failure.message}</p>
 						</div>
 						<button
 							type="submit"
-							class="shrink-0 rounded-control border border-warn px-2.5 py-1.5 text-xs font-semibold text-warn"
+							class="shrink-0 rounded-control border border-warn px-2.5 py-1.5 text-xs font-semibold text-content"
 							disabled={submitting}
 						>
 							Retry
