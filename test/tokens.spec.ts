@@ -43,6 +43,27 @@ describe.each(['nocturne', 'coquette'] as const)('%s faint text', (theme) => {
 	});
 });
 
+describe.each(['nocturne', 'coquette'] as const)('%s readable text', (theme) => {
+	const body = block(theme);
+	for (const surface of ['--mp-background', '--mp-surface', '--mp-surface-raised']) {
+		it(`muted text reaches 4.5:1 on ${surface}`, () => {
+			expect(contrast(token(body, '--mp-text-muted'), token(body, surface))).toBeGreaterThanOrEqual(
+				4.5
+			);
+		});
+		it(`accent ink reaches 4.5:1 on ${surface}`, () => {
+			expect(contrast(token(body, '--mp-accent-ink'), token(body, surface))).toBeGreaterThanOrEqual(
+				4.5
+			);
+		});
+	}
+	it('labels on an accent fill reach 4.5:1', () => {
+		expect(
+			contrast(token(body, '--mp-accent-contrast'), token(body, '--mp-accent'))
+		).toBeGreaterThanOrEqual(4.5);
+	});
+});
+
 describe('shared tokens', () => {
 	it('maps faint to a utility color', () => {
 		expect(css).toContain('--color-faint: var(--mp-faint)');

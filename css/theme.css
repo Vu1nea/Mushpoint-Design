@@ -31,25 +31,25 @@
 /* Nocturne — dark, the default. */
 :root,
 :root[data-theme='nocturne'] {
-	--mp-background: #14152b;
-	--mp-surface: #1f2147;
-	--mp-surface-raised: #272a56;
-	--mp-border: #3a3768;
+	--mp-background: #05060f;
+	--mp-surface: #0e0e17;
+	--mp-surface-raised: #15161f;
+	--mp-border: #23242f;
 	--mp-text: #f2f1fb;
-	--mp-text-muted: #9c9ee8;
+	--mp-text-muted: #a3a4b8;
 	/* Quietest readable text (timestamps, hints): 4.5:1 on surface and surface-raised. */
-	--mp-faint: #8f92c0;
-	--mp-accent: #7b6fc4;
+	--mp-faint: #8b8c9f;
+	--mp-accent: #bbb0f4;
 	/* Accent-colored text (links, chips, highlights). The accent itself is for
 	 * fills and borders; as text it fails WCAG AA (4.5:1) on the surfaces. */
-	--mp-accent-ink: #9c93d3;
+	--mp-accent-ink: #bbb0f4;
 	/* Text on accent fills. A shade darker than the page so labels reach 4.5:1. */
-	--mp-accent-contrast: #0b0c1a;
+	--mp-accent-contrast: #0b0b14;
 	--mp-accent-secondary: #4fd1c5;
 	--mp-accent-tertiary: #5ba8d4;
 	--mp-danger: #e2718a;
 	/* Progress tracks and inset fields sit on the page color, not a lighter one. */
-	--mp-track: #14152b;
+	--mp-track: #05060f;
 	color-scheme: dark;
 }
 
