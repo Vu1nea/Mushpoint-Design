@@ -64,7 +64,7 @@
 		{#each columns as column (column.key)}
 			<div
 				role="columnheader"
-				class="{cellClass(column)} text-xs font-semibold tracking-[0.06em] text-muted uppercase"
+				class="{cellClass(column)} text-xs font-medium text-faint"
 			>
 				{column.label}
 			</div>
