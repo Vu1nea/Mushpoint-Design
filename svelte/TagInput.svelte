@@ -37,7 +37,7 @@
 </script>
 
 <div
-	class="flex flex-wrap items-center gap-1.5 rounded-control border border-subtle bg-track px-2.5 py-1.5 focus-within:border-accent"
+	class="flex flex-wrap items-center gap-1.5 rounded-control border border-subtle bg-transparent px-2.5 py-1.5 focus-within:border-accent"
 >
 	{#each tags as tag (tag)}
 		<span

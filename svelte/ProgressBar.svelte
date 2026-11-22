@@ -41,7 +41,7 @@
 
 <div class="flex items-center gap-3">
 	<div
-		class="flex-1 overflow-hidden rounded-full bg-track"
+		class="flex-1 overflow-hidden rounded-full bg-subtle"
 		style="height:{height}px"
 		role="progressbar"
 		aria-valuemin={0}

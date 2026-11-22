@@ -25,12 +25,13 @@ export function chip(active: boolean): string {
 	}`;
 }
 
-/** Small square-ish toggle used in rows of equal-width options (timeframe, status). */
+/** Toggle in a row of options (timeframe, status, filters). Flat: the selected one is
+ * marked by an underline, not a raised box, so a row of them never reads as buttons. */
 export function segment(active: boolean): string {
-	return `flex-1 rounded-control px-2 py-2 text-xs font-semibold whitespace-nowrap transition-colors ${focusRing} ${
+	return `flex-1 rounded-none border-b-2 px-2 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors ${focusRing} ${
 		active
-			? 'bg-surface-raised text-content'
-			: 'bg-transparent text-muted hover:bg-surface-raised hover:text-content'
+			? 'border-accent text-content'
+			: 'border-transparent text-muted hover:text-content'
 	}`;
 }
 
@@ -63,7 +64,7 @@ export const stat = {
 };
 
 export const field = {
-	input: `w-full rounded-control border border-subtle bg-track px-3.25 py-2.75 text-sm text-content transition-colors placeholder:text-muted/60 focus:border-accent focus:outline-none`,
+	input: `w-full rounded-control border border-subtle bg-transparent px-3.25 py-2.75 text-sm text-content transition-colors placeholder:text-muted/60 focus:border-accent focus:outline-none`,
 	/**
 	 * Inline "add another one" affordance — dashed so it reads as optional. Width
 	 * is left to the caller, since these often sit side by side in a flex row.

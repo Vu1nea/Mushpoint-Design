@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { button, chip, pill, row, segment, sheet, stat, type PillTone } from '../utils/ui';
+import { button, chip, field, pill, row, segment, sheet, stat, type PillTone } from '../utils/ui';
 
 const tones: PillTone[] = ['neutral', 'active', 'done', 'warn', 'danger'];
 
@@ -37,5 +37,19 @@ describe('segment', () => {
 	it('never wraps a label and its count onto two lines', () => {
 		expect(segment(true)).toContain('whitespace-nowrap');
 		expect(segment(false)).toContain('whitespace-nowrap');
+	});
+});
+
+describe('flat controls', () => {
+	it('marks the selected segment with an underline, not a fill', () => {
+		expect(segment(true)).toContain('border-b-2');
+		expect(segment(true)).toContain('border-accent');
+		expect(segment(true)).not.toMatch(/(^|\s)bg-(surface|surface-raised|track)(\s|$)/);
+		expect(segment(false)).not.toMatch(/(^|\s)bg-(surface|surface-raised|track)(\s|$)/);
+	});
+
+	it('draws inputs without a fill', () => {
+		expect(field.input).toContain('bg-transparent');
+		expect(field.input).not.toContain('bg-track');
 	});
 });
