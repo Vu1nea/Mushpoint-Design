@@ -3,7 +3,7 @@ import { createRawSnippet } from 'svelte';
 import { render } from 'svelte/server';
 
 import DataTable from '../svelte/DataTable.svelte';
-import RowMenu from '../svelte/RowMenu.svelte';
+import RowMenu, { menuItemClass } from '../svelte/RowMenu.svelte';
 
 const cell = createRawSnippet<[{ id: number }, string]>((row, key) => ({
 	render: () => `<span>${key()}-${row().id}</span>`
@@ -82,5 +82,11 @@ describe('RowMenu', () => {
 		expect(body).toContain('aria-label="Row actions"');
 		expect(body).toContain('aria-expanded="false"');
 		expect(body).not.toContain('role="menu"');
+	});
+
+	it('menu items show keyboard focus with an outline, not only a fill', () => {
+		expect(menuItemClass).toContain('focus-visible:outline-2');
+		expect(menuItemClass).toContain('focus-visible:outline-accent');
+		expect(menuItemClass).not.toContain('focus-visible:outline-none');
 	});
 });

@@ -1,3 +1,9 @@
+<script lang="ts" module>
+	/** Menu item classes; keyboard focus is an inset outline, visible on the raised panel. */
+	export const menuItemClass =
+		'block w-full cursor-pointer px-3 py-2 text-left text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent';
+</script>
+
 <script lang="ts">
 	/**
 	 * Row action menu: a `⋯` button opening a popover of items. Arrow keys /
@@ -126,13 +132,11 @@
 		onkeydown={onMenuKeydown}
 		onclick={(event) => event.stopPropagation()}
 	>
-		{#each items as item (item.label)}
+		{#each items as item, index (index)}
 			<button
 				type="button"
 				role="menuitem"
-				class="block w-full cursor-pointer px-3 py-2 text-left text-sm transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-none {item.danger
-					? 'text-danger'
-					: 'text-content'}"
+				class="{menuItemClass} {item.danger ? 'text-danger' : 'text-content'}"
 				onclick={() => select(item)}
 			>
 				{item.label}
