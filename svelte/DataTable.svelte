@@ -38,6 +38,8 @@
 
 	const grid =
 		'grid [grid-template-columns:var(--cols-narrow)] md:[grid-template-columns:var(--cols-wide)]';
+	/** Cancels the cells' px-3 so cell text lines up with the container edge. */
+	const bleed = '-mx-3';
 	const cellClass = (c: Column) =>
 		`min-w-0 truncate px-3 py-2 ${c.align === 'end' ? 'text-right' : ''} ${
 			c.hideBelow ? 'max-md:hidden' : ''
@@ -52,8 +54,13 @@
 	}
 </script>
 
-<div role="table" aria-label={ariaLabel} style:--cols-wide={wide} style:--cols-narrow={narrow}>
-	<div role="row" class="{grid} border-b border-subtle">
+<div
+	role="table"
+	aria-label={ariaLabel}
+	class="overflow-visible"
+	style:--cols-wide={wide} style:--cols-narrow={narrow}
+>
+	<div role="row" class="{grid} {bleed} border-b border-subtle">
 		{#each columns as column (column.key)}
 			<div
 				role="columnheader"
@@ -64,7 +71,7 @@
 		{/each}
 	</div>
 	{#if rows.length === 0}
-		<div role="row" class="{rowClass} flex items-center">
+		<div role="row" class="{rowClass} {bleed} flex items-center">
 			<div role="cell" class="min-w-0 px-3 py-2 text-sm text-muted">{empty}</div>
 		</div>
 	{:else}
@@ -73,7 +80,7 @@
 				<div
 					role="row"
 					tabindex="0"
-					class="{rowClass} {grid} cursor-pointer items-center focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
+					class="{rowClass} {bleed} {grid} cursor-pointer items-center focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent"
 					onclick={() => onRowClick(r)}
 					onkeydown={(event) => onKeydown(event, r)}
 				>
@@ -82,7 +89,7 @@
 					{/each}
 				</div>
 			{:else}
-				<div role="row" class="{rowClass} {grid} items-center">
+				<div role="row" class="{rowClass} {bleed} {grid} items-center">
 					{#each columns as column (column.key)}
 						<div role="cell" class="{cellClass(column)} text-sm">{@render cell(r, column.key)}</div>
 					{/each}
