@@ -1,7 +1,25 @@
 <script lang="ts" module>
 	/** Menu item classes; keyboard focus is an inset outline, visible on the raised panel. */
 	export const menuItemClass =
-		'block w-full cursor-pointer px-3 py-2 text-left text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent';
+		'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent';
+
+	/**
+	 * Danger items keep `text-content` for the label (`text-danger` is under 4.5:1
+	 * on the raised panel) and flag themselves with a danger-coloured dot instead.
+	 */
+	export const dangerItemClass = `${menuItemClass} font-semibold text-content`;
+	export const normalItemClass = `${menuItemClass} text-content`;
+	export const dangerMarkerClass = 'size-2 shrink-0 rounded-full bg-danger';
+
+	/** Index to focus after `key`, or -1 when the key does not move focus. */
+	export function nextIndex(key: string, index: number, length: number): number {
+		if (length === 0) return -1;
+		if (key === 'ArrowDown') return (index + 1) % length;
+		if (key === 'ArrowUp') return (index - 1 + length) % length;
+		if (key === 'Home') return 0;
+		if (key === 'End') return length - 1;
+		return -1;
+	}
 </script>
 
 <script lang="ts">
@@ -34,11 +52,12 @@
 	const buttons = () =>
 		Array.from(panel?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
 
-	async function openMenu() {
+	async function openMenu(last = false) {
 		if (!trigger) return;
 		popover.show(trigger);
 		await tick();
-		buttons()[0]?.focus();
+		const list = buttons();
+		list[last ? list.length - 1 : 0]?.focus();
 	}
 
 	function close(refocus = false) {
@@ -55,28 +74,31 @@
 		event.stopPropagation();
 		const list = buttons();
 		const index = list.indexOf(document.activeElement as HTMLElement);
-		let next = -1;
-		if (event.key === 'ArrowDown') next = (index + 1) % list.length;
-		else if (event.key === 'ArrowUp') next = (index - 1 + list.length) % list.length;
-		else if (event.key === 'Home') next = 0;
-		else if (event.key === 'End') next = list.length - 1;
-		else if (event.key === 'Escape') {
+		if (event.key === 'Escape') {
 			event.preventDefault();
 			close(true);
 			return;
-		} else if (event.key === 'Tab') {
-			close();
+		}
+		if (event.key === 'Tab') {
+			// Refocus the trigger first so Tab moves on from it, not from <body>.
+			close(true);
 			return;
-		} else return;
+		}
+		const next = nextIndex(event.key, index, list.length);
+		if (next < 0) return;
 		event.preventDefault();
 		list[next]?.focus();
 	}
 
 	function onTriggerKeydown(event: KeyboardEvent) {
 		event.stopPropagation();
-		if (event.key === 'ArrowDown' && !popover.open) {
+		if (popover.open) return;
+		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			openMenu();
+		} else if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			openMenu(true);
 		}
 	}
 
@@ -136,9 +158,10 @@
 			<button
 				type="button"
 				role="menuitem"
-				class="{menuItemClass} {item.danger ? 'text-danger' : 'text-content'}"
+				class={item.danger ? dangerItemClass : normalItemClass}
 				onclick={() => select(item)}
 			>
+				{#if item.danger}<span aria-hidden="true" data-danger-marker class={dangerMarkerClass}></span>{/if}
 				{item.label}
 			</button>
 		{/each}
