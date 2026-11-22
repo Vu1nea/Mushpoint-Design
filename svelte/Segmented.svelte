@@ -14,6 +14,7 @@
 	let { options, value = $bindable(), ariaLabel }: Props = $props();
 
 	let group: HTMLElement | undefined = $state();
+	const hasSelection = $derived(options.some((o) => o.value === value));
 
 	function onKeydown(event: KeyboardEvent) {
 		const index = options.findIndex((o) => o.value === value);
@@ -30,21 +31,22 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y_interactive_supports_focus -->
 <div
 	bind:this={group}
 	role="radiogroup"
 	aria-label={ariaLabel}
-	tabindex="-1"
 	class="flex gap-1"
 	onkeydown={onKeydown}
 >
-	{#each options as option (option.value)}
+	{#each options as option, i (option.value)}
 		{@const selected = option.value === value}
+		{@const tabbable = hasSelection ? selected : i === 0}
 		<button
 			type="button"
 			role="radio"
 			aria-checked={selected}
-			tabindex={selected ? 0 : -1}
+			tabindex={tabbable ? 0 : -1}
 			class={segment(selected)}
 			onclick={() => (value = option.value)}
 		>

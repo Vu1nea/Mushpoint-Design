@@ -17,8 +17,7 @@ describe('structural components', () => {
 		});
 		expect(body).toContain('12');
 		expect(body).toContain('Streak');
-		expect(body).toMatch(/<span class="sr-only">up<\/span>/);
-		expect(body).toContain('+2');
+		expect(body).toMatch(/<span class="sr-only">up<\/span> \+2/);
 	});
 
 	it('Segmented marks the selected option and shows counts', () => {
@@ -33,10 +32,33 @@ describe('structural components', () => {
 			}
 		});
 		expect(body).toContain('role="radiogroup"');
-		expect(body).toMatch(/aria-checked="true"[^>]*>[\s\S]*?Beta/);
+		// Beta's own button is the selected one, and only that one.
+		expect(body).toMatch(/<button[^>]*aria-checked="true"[^>]*>\s*Beta/);
+		expect(body).toMatch(/<button[^>]*aria-checked="false"[^>]*>\s*Alpha/);
 		expect(body.match(/aria-checked="true"/g)).toHaveLength(1);
-		expect(body).toContain('3');
-		expect(body).toContain('7');
+		// Roving tabindex: selected 0, the rest -1.
+		expect(body).toMatch(/<button[^>]*tabindex="0"[^>]*>\s*Beta/);
+		expect(body).toMatch(/<button[^>]*tabindex="-1"[^>]*>\s*Alpha/);
+		// Counts render in their own element next to the right label.
+		expect(body).toMatch(/Alpha\s*(?:<!--[^>]*-->)?<span[^>]*>3<\/span>/);
+		expect(body).toMatch(/Beta\s*(?:<!--[^>]*-->)?<span[^>]*>7<\/span>/);
+	});
+
+	it('Segmented makes the first option tabbable when value is not in options', () => {
+		const { body } = render(Segmented, {
+			props: {
+				ariaLabel: 'Status',
+				value: 'zzz',
+				options: [
+					{ value: 'a', label: 'Alpha' },
+					{ value: 'b', label: 'Beta' }
+				]
+			}
+		});
+		expect(body).not.toContain('aria-checked="true"');
+		expect(body).toMatch(/<button[^>]*tabindex="0"[^>]*>\s*Alpha/);
+		expect(body).toMatch(/<button[^>]*tabindex="-1"[^>]*>\s*Beta/);
+		expect(body.match(/tabindex="0"/g)).toHaveLength(1);
 	});
 
 	it('Breadcrumb last item is current and not a link', () => {

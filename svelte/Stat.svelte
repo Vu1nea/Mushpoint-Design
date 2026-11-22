@@ -18,7 +18,7 @@
 	<dd class="m-0 flex items-baseline gap-2">
 		<span class={stat.value}>{value}</span>
 		{#if delta}
-			<span class={stat.delta}><span class="sr-only">{word}</span>{delta}</span>
+			<span class={stat.delta}><span class="sr-only">{word}</span> {delta}</span>
 		{/if}
 	</dd>
 </dl>
