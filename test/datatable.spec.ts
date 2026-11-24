@@ -99,10 +99,10 @@ describe("RowMenu", () => {
     expect(menuItemClass).not.toContain("focus-visible:outline-none");
   });
 
-  it("danger items use content text plus a danger-tinted hover, never text-danger", () => {
-    expect(dangerItemClass).toContain("text-content");
+  it("danger items read red and wash red on hover", () => {
+    expect(dangerItemClass).toContain("text-danger");
     expect(dangerItemClass).toContain("hover:bg-danger");
-    expect(dangerItemClass).not.toContain("text-danger");
+    expect(dangerItemClass).not.toContain("hover:bg-surface");
     expect(normalItemClass).not.toContain("text-danger");
   });
 

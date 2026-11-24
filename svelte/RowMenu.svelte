@@ -1,13 +1,12 @@
 <script lang="ts" module>
 	/** Menu item classes; keyboard focus is an inset outline, visible on the raised panel. */
-	export const menuItemClass =
-		'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent';
+	const itemBase =
+		'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent';
+	export const menuItemClass = `${itemBase} hover:bg-surface`;
 
-	/**
-	 * Danger items keep `text-content` for the label (`text-danger` is under 4.5:1
-	 * on the raised panel) and flag themselves with a danger-tinted hover instead.
-	 */
-	export const dangerItemClass = `${menuItemClass} text-content hover:bg-danger/20`;
+	/** Danger items read red and wash red on hover. The hover is not shared with
+	 * `menuItemClass`, so the two backgrounds never compete. */
+	export const dangerItemClass = `${itemBase} font-semibold text-danger hover:bg-danger/15`;
 	export const normalItemClass = `${menuItemClass} text-content`;
 
 	/** Index to focus after `key`, or -1 when the key does not move focus. */
