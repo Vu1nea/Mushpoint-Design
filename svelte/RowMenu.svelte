@@ -5,11 +5,10 @@
 
 	/**
 	 * Danger items keep `text-content` for the label (`text-danger` is under 4.5:1
-	 * on the raised panel) and flag themselves with a danger-coloured dot instead.
+	 * on the raised panel) and flag themselves with a danger-tinted hover instead.
 	 */
-	export const dangerItemClass = `${menuItemClass} font-semibold text-content`;
+	export const dangerItemClass = `${menuItemClass} text-content hover:bg-danger/20`;
 	export const normalItemClass = `${menuItemClass} text-content`;
-	export const dangerMarkerClass = 'size-2 shrink-0 rounded-full bg-danger';
 
 	/** Index to focus after `key`, or -1 when the key does not move focus. */
 	export function nextIndex(key: string, index: number, length: number): number {
@@ -31,10 +30,12 @@
 	 */
 	import { tick } from 'svelte';
 
+	import type { IconName } from '../icons';
+	import Icon from './Icon.svelte';
 	import { isOutside, Popover, portal } from './popover.svelte';
 
 	interface Props {
-		items: { label: string; onSelect: () => void; danger?: boolean }[];
+		items: { label: string; onSelect: () => void; danger?: boolean; icon?: IconName }[];
 		label: string;
 	}
 
@@ -161,7 +162,7 @@
 				class={item.danger ? dangerItemClass : normalItemClass}
 				onclick={() => select(item)}
 			>
-				{#if item.danger}<span aria-hidden="true" data-danger-marker class={dangerMarkerClass}></span>{/if}
+				{#if item.icon}<Icon name={item.icon} size={16} />{/if}
 				{item.label}
 			</button>
 		{/each}

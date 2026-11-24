@@ -5,7 +5,6 @@ import { render } from "svelte/server";
 import DataTable from "../svelte/DataTable.svelte";
 import RowMenu, {
   dangerItemClass,
-  dangerMarkerClass,
   menuItemClass,
   nextIndex,
   normalItemClass,
@@ -100,13 +99,11 @@ describe("RowMenu", () => {
     expect(menuItemClass).not.toContain("focus-visible:outline-none");
   });
 
-  it("danger items use content text plus a danger marker, never text-danger", () => {
+  it("danger items use content text plus a danger-tinted hover, never text-danger", () => {
     expect(dangerItemClass).toContain("text-content");
-    expect(dangerItemClass).toContain("font-semibold");
+    expect(dangerItemClass).toContain("hover:bg-danger");
     expect(dangerItemClass).not.toContain("text-danger");
     expect(normalItemClass).not.toContain("text-danger");
-    expect(dangerMarkerClass).toContain("bg-danger");
-    expect(dangerMarkerClass).not.toContain("text-danger");
   });
 
   it("nextIndex wraps arrows and jumps on Home/End", () => {
